@@ -11,16 +11,22 @@ public static class ExpressionEvaluator
     {
         var posfix = string.Empty;
         var stack = new Stack<char>();
-        foreach (var item in infix)
+        int i = 0;
+        //foreach (var item in infix)
+        while (i < infix.Length)
         {
+            var item = infix[i];
+
             if (IsOperator(item))
             {
                 if (item == ')')
                 {
                     var ope = stack.Pop();
-                    while(ope != '(')
+                    while (ope != '(')
                     {
-                        posfix += ope;
+                        //posfix += ope;
+
+                        posfix += " " + ope;
                         ope = stack.Pop();
                     }
                 }
@@ -38,24 +44,35 @@ public static class ExpressionEvaluator
                         }
                         else
                         {
-                            posfix += stack.Pop();
+                            //posfix += stack.Pop();
+                            posfix += " " + stack.Pop();
                             stack.Push(item);
                         }
                     }
                 }
+                i++;
+            }
+            else if (char.IsDigit(item))
+            {
+                string number = string.Empty;
+                while (i < infix.Length && char.IsDigit(infix[i]))
+                {
+                    number += infix[i];
+                    i++;
+                }
+                posfix += " " + number;
             }
             else
             {
-                posfix += item;
+                i++;
             }
         }
-        do
+        while (stack.Count != 0)
         {
-            posfix += stack.Pop();
-        } while (stack.Count != 0);
-        return posfix;
+            posfix += " " + stack.Pop();
+        }
+        return posfix.Trim();
     }
-
     private static int PriorityStack(char op) => op switch
     {
         '^' => 3,
@@ -83,17 +100,21 @@ public static class ExpressionEvaluator
     private static double EvalutePostfix(string postfix)
     {
         var stack = new Stack<double>();
-        foreach (var item in postfix)
-        {
-            if (IsOperator(item))
+        var tokens = postfix.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        //foreach (var item in postfix)
+          foreach (var token in tokens)
+            {
+            if (token.Length == 1 && IsOperator(token[0]))
             {
                 var ope2 = stack.Pop();
                 var ope1 = stack.Pop();
-                stack.Push(Calculate(ope1, ope2, item));
+                stack.Push(Calculate(ope1, ope2, token[0]));
             }
             else
             {
-                stack.Push(char.GetNumericValue(item));
+                //stack.Push(char.GetNumericValue(item));
+                  stack.Push(double.Parse(token));
             }
         }
         return stack.Pop();
