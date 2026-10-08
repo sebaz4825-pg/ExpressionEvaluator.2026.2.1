@@ -55,7 +55,7 @@ public static class ExpressionEvaluator
             else if (char.IsDigit(item))
             {
                 string number = string.Empty;
-                while (i < infix.Length && char.IsDigit(infix[i]))
+                while (i < infix.Length && (char.IsDigit(infix[i]) || infix[i] == '.'))
                 {
                     number += infix[i];
                     i++;
@@ -66,6 +66,7 @@ public static class ExpressionEvaluator
             {
                 i++;
             }
+
         }
         while (stack.Count != 0)
         {
@@ -114,7 +115,8 @@ public static class ExpressionEvaluator
             else
             {
                 //stack.Push(char.GetNumericValue(item));
-                  stack.Push(double.Parse(token));
+                //stack.Push(double.Parse(token));
+                stack.Push(double.Parse(token, System.Globalization.CultureInfo.InvariantCulture));
             }
         }
         return stack.Pop();
